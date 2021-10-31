@@ -1,7 +1,7 @@
 /*
 
   * Author: Radosław Smoter
-  * Name: Wstep do programowania - projekt 2
+  * Name: smoter_r_wp_2.c
   * OS:
   * Ubuntu 21.10
   * To compile:
