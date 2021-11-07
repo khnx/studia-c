@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "stdio.h": "c",
+    "importmatrix.h": "c",
+    "selectf.h": "c"
+  }
+}
