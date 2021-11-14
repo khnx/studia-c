@@ -1,4 +1,32 @@
-#include <stdio.h>
+/*
+  * This file contains useful utility functions. They may be used
+  * To display arrays in various formatted ways, or be useful from
+  * Other code-maitaining purpose.
+  * Another category of functions in this file are functions that
+  * Keep repeating themselves in many files in this repository.
+*/
+
+#include "utils.h"
+
+
+int isEven(long int n)
+{
+  return n % 2;
+}
+
+
+void createName(char *filename)
+{
+  // System time
+  time_t timer;
+  time(&timer);
+
+  // Convert time (from timer) to string and save it to filename
+  sprintf(filename, "%li", timer);
+  // Add ext
+  strcat(filename, ".dat");
+}
+
 
 void showArrayRow(double arr[], int size)
 {
@@ -9,6 +37,7 @@ void showArrayRow(double arr[], int size)
   printf("\n");
 }
 
+
 void showArrayCol(double arr[], int size)
 {
   int i;
@@ -17,6 +46,7 @@ void showArrayCol(double arr[], int size)
   }
   printf("\n");
 }
+
 
 void showMatrix(double arr[][10], int size)
 {

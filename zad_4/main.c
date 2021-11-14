@@ -1,21 +1,21 @@
-#include "math.h"
+#include "main.h"
 
-#include "decToBin.h"
+int main(void)
+{
+  double x = 1.2; // Value as domain
+  double funcVal = doMath(x); // Math function result
+  if (funcVal == NAN) return -1; // NAN exception 
+  showValues(funcVal);
+  
+  return 0;
+}
 
-/*
-  * Do a mathematical function
-  * Parameter: value as domain
-*/
 double doMath(double x) {
   double log1 = log(x);
   if (isnan(log1)) return NAN;
   return 5 / (3 + pow(log1 / log(10), 2));
 }
 
-/*
-  * Select k-th digit from number n
-  * Parameters: number, digit number
-*/
 unsigned short int selectDigit(double n, int k) {
 
   // Format number into scientific notation
@@ -38,11 +38,6 @@ unsigned short int selectDigit(double n, int k) {
   return (int)n % 10;
 }
 
-/*
-  * Show a value in various counting systems:
-  * In bin, oct and hex
-  * Parameter: value
-*/
 void showValues(double val) {
 
   // Number of digit to choose from val (from left)
@@ -61,7 +56,6 @@ void showValues(double val) {
   // Counting system
   printf("%10s%10s%10s%10s\n", "bin", "oct", "dec", "hex");
 
-  extern void decToBin(unsigned long int);
   
   for (int i = 0; i < 3; i++)
   {
@@ -76,4 +70,32 @@ void showValues(double val) {
 
     printf("\n");
   }
+}
+
+void decToBin(unsigned long int n)
+{
+
+  int remainder[65]; // Remainders of division (n % 2)
+  int i = 0; // Current index
+  
+  do {
+    remainder[i] = isEven(n);
+    i++;
+  } while ((n /= 2) > 0);
+
+  // Determine how many zeros to add to remainder to maintain format in eights with zeros in the beginning
+  while(i % 8)
+  {
+    remainder[i] = 0;
+    i++;
+  }
+
+  char bin[65]; // Binary form of n
+  // Flip remainder. Add '0' to every integer so it becomes
+  // it's corresponding character
+  for (int j = 0; j < i; j++)
+    bin[j] = remainder[i - j - 1] + '0';
+
+  bin[i] = '\0'; // End as string
+  printf("%10s", bin); // Print formatted verion
 }

@@ -2,21 +2,32 @@
 #define SEED 62
 
 
-/* ***** INCLUDES ***** */
+/* ***** LIBRARIES ***** */
 
 // Standard library headers
 #include <stdio.h>
 #include <stdlib.h>
 
-// My header files
 #include "../utils/utils.c"
-#include "saveResults.h"
 
 
 /* ***** PROTOTYPES ***** */
 
+/*
+  * Save results of the task to a txt file
+  * Parameters: array 2D, array, product value
+*/
+void saveMatrixToFile(double [][10], char *, char *, char *);
+
+
 /* Generate a matrix filled with random numbers, 2nd dim is 10 */
-void generateRandomNumbersMatrix(double matrix[][10]);
+void randomNumbersMatrix(double [][10]);
+
+
 /* Sort array v in ascending order */
-void quicksort(double v[], int l, int r);
-void sortColumns(double matrix[][10]);
+void quicksort(double [], int, int);
+
+
+void sortColumns(double [][10]);
+
+
