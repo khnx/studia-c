@@ -1,49 +1,50 @@
 #include "stdio.h"
 #include "math.h"
 
-void selectF(double arr[][10], double diagonal[][10]);
-void populateArr(double arr[][10]);
-void show(double arr[][10]);
+void shellSort(double v[], int n, int mode);
 
 int main(void)
 {
-  
-  double arr[10][10];
-  double diagonal[10][10];
+  double arr[] = { 12, 123, 42, 44, 41, 13, 56 };
+  int n = sizeof(arr) / sizeof(double);
 
-  populateArr(arr);
-  selectF(arr, diagonal);
-  show(arr);
-  printf("\n");
-  show(diagonal);
+  shellSort(arr, n, -1);
+  
+  for (int i = 0; i < n; i++)
+    printf("%5.f", arr[i]);
 
   return 0;
 }
 
-void selectF(double arr[][10], double diagonal[][10]) {
-  int m = 0; // diagonal rows
-  int n = 0; // diagonal cols
-  for (int i = 0; i < 10; i++) {
-    for (int j = 0; j < 10; j++) {
-      if (i > j) diagonal[m][n] = arr[i][j];
-      else diagonal[m][n] = NAN;
-      n++;
+/*
+  * Exchange two values
+  * Parameters: pointer to value1, pointer to value2
+*/
+void exch(double *val1, double *val2)
+{
+  double temp = *val1;
+  *val1 = *val2;
+  *val2 = temp;
+}
+
+/*
+  * Sort an array of length n
+  * If third parameter set to any value that evaluates as true
+  * Sorts increasingly, if set to to 0, sorts in decreasing order
+  * Parameters: array, array's length, sorting mode
+*/
+void shellSort(double v[], int n, int mode)
+{
+  int gap, i, j, temp;
+
+  for (gap = n/2; gap > 0; gap /= 2)
+    for (i = gap; i < n; i++)
+    {
+      if(mode)
+        for (j = i-gap; j >= 0 && v[j] > v[j+gap]; j -= gap)
+          exch(&v[j], &v[j+gap]);
+      else
+        for (j = i-gap; j >= 0 && v[j] < v[j+gap]; j -= gap)
+          exch(&v[j], &v[j+gap]);
     }
-    m++;
-    n = 0;
-  }
-}
-
-void populateArr(double arr[][10]) {
-  for (int i = 0; i  < 10; i++)
-    for (int j = 0; j < 10; j++)
-      arr[j][i] = 1;
-}
-
-void show(double arr[][10]) {
-  for (int i = 0; i  < 10; i++) {
-    for (int j = 0; j < 10; j++)
-      printf("%6.f", arr[i][j]);
-    printf("\n");
-  }
 }

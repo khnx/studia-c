@@ -1,12 +1,5 @@
-#include "math.h"
-
-void show(double arr[][10]) {
-  for (int i = 0; i  < 10; i++) {
-    for (int j = 0; j < 10; j++)
-      printf("%6.f", arr[i][j]);
-    printf("\n");
-  }
-}
+#include <math.h>
+#include <stdio.h>
 
 /*
   * Select entries from under the main diagonal of arr
@@ -27,34 +20,15 @@ void selectF(double arr[][10], double diagonal[][10]) {
   }
 }
 
-/*
-  * Select single column from a 2D array
-  * Parameters: array 2D, array, col number
-*/
-void selectCol(double arr[][10], double col[], int n)
-{
-  int j = 0;
-  for (int i = 0; i < 10; i++)
-    col[j++] = arr[i][n];
-}
-
-/*
-  * Select the highest values for each column
-  * Return these values in array max
-  * Parameters: array 2D, array
-*/
-void selectHighest(double arr[][10], double max[]) {
-  double col[10]; // Placeholder for each column
+void sumRows(double arr[][10], double sums[]) {
+  double rowNumber[10];
 
   for (int i = 0; i < 10; i++) {
-    selectCol(arr, col, i); // Select a col
-    extern void bubbleSort(double [], int, int);
-    bubbleSort(col, 10, 1); // Sort it
-
+    double sum = 0;
     int j = 0;
-    while (isnan(col[j])) j++;
-
-    max[i] = col[j]; // Select the highest values
-    if (j == 10) max[i] = NAN; // Whole column is NAN
+    for (j; !isnan(arr[i][j]); j++)
+      sum += arr[i][j];
+    if (j > 0) sums[i] = sum;
+    else sums[i] = NAN;
   }
 }

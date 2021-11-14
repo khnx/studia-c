@@ -1,5 +1,5 @@
-#include "stdio.h"
-#include "math.h"
+#include <stdio.h>
+#include <math.h>
 
 /*
   * Swap two values
@@ -13,10 +13,10 @@ void swap(double *a, double *b) {
 
 /*
   * Sort an array of length n, increasingly
-  * Parameters: array, array's length
+  * Parameters: array, array's length, monotonicity
 */
 void bubbleSort(double arr[], int n, int monotonicity) {
-  int swapCounter = 1;
+  int swapCounter = 1; //
 
   // Do until no more swaps have been encountered
   while(swapCounter) {

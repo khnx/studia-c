@@ -2,48 +2,57 @@
 #include "math.h"
 
 /*
-  * Swap two values
-  * Parameters: value1, value2
+  * Exchange two values
+  * Parameters: pointer to value1, pointer to value2
 */
-void swap(double *a, double *b) {
-  double temp = *a;
-  *a = *b;
-  *b = temp;
+void exch(double *val1, double *val2)
+{
+  double temp = *val1;
+  *val1 = *val2;
+  *val2 = temp;
 }
 
 /*
-  * Sort an array of length n, increasingly
-  * Parameters: array, array's length
+  * Sort an array of length n
+  * If third parameter set to any value that evaluates as true
+  * Sorts increasingly, if set to to 0, sorts in decreasing order
+  * Parameters: array, array's length, sorting mode
 */
-void bubbleSort(double arr[], int n, int monotonicity) {
-  int swapCounter = 1;
+void shellSort(double v[], int n, int mode)
+{
+  int gap, i, j, temp;
 
-  // Do until no more swaps have been encountered
-  while(swapCounter) {
-    swapCounter = 0;
-
-    for (int i = 0; i < n-1; i++)
+  for (gap = n/2; gap > 0; gap /= 2)
+    for (i = gap; i < n; i++)
     {
-      if (monotonicity) { // Increasing
-        if (arr[i] < arr[i + 1]) {
-          swap(&arr[i], &arr[i + 1]);
-          swapCounter++;
-        }
-      } else { // Decreasing
-        if (arr[i] > arr[i + 1]) {
-          swap(&arr[i], &arr[i + 1]);
-          swapCounter++;
-        }
-      }
+      if(mode)
+        for (j = i-gap; j >= 0 && v[j] > v[j+gap]; j -= gap)
+          exch(&v[j], &v[j+gap]);
+      else
+        for (j = i-gap; j >= 0 && v[j] < v[j+gap]; j -= gap)
+          exch(&v[j], &v[j+gap]);
     }
-  }
 }
 
-/*
-  * Sort all rows of a  matrix
-  * Parameters: 2D array
-*/
-void sortMatrix(double arr[][10]) {
+void straightenMatrix(double array[], double matrix[][10])
+{
+  int k = 0;
   for (int i = 0; i < 10; i++)
-    bubbleSort(arr[i], 10, 1);
+    for (int j = 0; j < 10; j++)
+      array[k++] = matrix[i][j];
 }
+
+void makeMatrix(double matrix[][10], double array[0])
+{
+  int k = 0;
+  for (int i = 0; i < 10; i++)
+    for (int j = 0; j < 10; j++)
+      matrix[i][j] = array[k++];
+}
+
+void sortMatrix(double matrix[][10]) {
+  double array[100];
+  straightenMatrix(array, matrix);
+  shellSort(array, 100, 0);
+  makeMatrix(matrix, array);
+  }

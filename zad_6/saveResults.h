@@ -1,6 +1,6 @@
-#include "stdio.h"
-#include "time.h"
-#include "string.h"
+#include <stdio.h>
+#include <time.h>
+#include <string.h>
 
 /*
   * Create unique name for new file (time in sec + ext)
@@ -21,7 +21,7 @@ void createName(char filename[]) {
   * Save results of the task to a txt file
   * Parameters: array 2D, array, product value
 */
-void saveResults(double matrix[][10], double max[], double productVal) {
+void saveResults(double matrix[][10], double array[], double product) {
   // File name string buffer
   char filename[32];
   createName(filename);
@@ -38,13 +38,13 @@ void saveResults(double matrix[][10], double max[], double productVal) {
     }
 
     // Entries from under main diagonal, highest values
-    fprintf(save, "%s", "Under main diagonal, col min:\n");
+    fprintf(save, "%s", "Under main diagonal, rows sums:\n");
     for (int i = 0; i < 10; i++)
-      fprintf(save, "%8.1f", max[i]);
+      fprintf(save, "%8.1f", array[i]);
 
     // Product value
     fprintf(save, "%s", "\nProduct value:\n");
-    fprintf(save, "%16.6e", productVal);
+    fprintf(save, "%16.6e", product);
   }
 
   fclose(save);

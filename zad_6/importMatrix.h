@@ -2,7 +2,7 @@
 
 /*
   * Import matrix from "matrix.txt" file
-  * Parameters: two dimensional array with fixed 2nd dim to 10
+  * Parameters: two dimensional array with 2nd dim fixed to 10
 */
 void importMatrix(double matrix[][10])
 {

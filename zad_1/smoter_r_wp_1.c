@@ -12,11 +12,11 @@
 */
 
 // Add libraries
-#include "stdio.h"
-#include "stdlib.h"
-#include "math.h"
-#include "time.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+#include <string.h>
 
 // Do math; print to file
 // domain start, domain end
