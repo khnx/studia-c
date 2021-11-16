@@ -1,3 +1,10 @@
+/*
+  * Generate matrix 10x10 of random numbers;
+  * Save it to a txt file
+  * Sort the matrix regarding each column's elements' values
+  * Append sorted results to the file
+*/
+
 #include "main.h"
 
 int main(void)
@@ -9,7 +16,7 @@ int main(void)
     matrix,
     "results.txt",
     "w",
-    "Matrix 10x10 of random numbers:\n"
+    "Matrix 10x10 of random numbers:"
   );
 
   sortColumns(matrix);
@@ -18,7 +25,7 @@ int main(void)
     matrix,
     "results.txt",
     "a",
-    "Matrix 10x10 of numbers sorted in descending order:\n"
+    "Matrix 10x10 of numbers sorted in descending order:"
   );
 
   showMatrix(matrix, 10);
@@ -114,5 +121,3 @@ void sortColumns(double matrix[][10])
       matrix[j][i] = col[k++]; // write from column to matrix
   }
 }
-
-
