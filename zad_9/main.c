@@ -244,32 +244,5 @@ double sum_matrix(double **M) {
 
  */
 void approx_val(double **M) {
-  /* Set a_i to 0 for the first row */
-  for (int i = 0; i < N/2; i++)
-    for (int j = 0; j < N/2-1; j++)
-      if (j >= i)
-        *(*(M+i)+j) = 0;
-
-  printf("\n");
-  for (int i = 0; i < N/2; i++) {
-    for (int j = 0; j < N/2; j++)
-      printf("%15.7lf", *(*(M+i)+j));
-    printf("\n");
-  }      
   
-  /* All rows */
-  for (int i = 0; i < N/2; i++) {
-    double coeff = sum_matrix(M);
-    /* Insert new value for coefficients */
-    for (int j = 0; j < N/2; j++)
-      if (i != j)
-        *(*(M+j)+i) = coeff;
-
-    printf("\n");
-    for (int i = 0; i < N/2; i++) {
-      for (int j = 0; j < N/2; j++)
-        printf("%15.7lf", *(*(M+i)+j));
-      printf("\n");
-  }  
-  }
 }
