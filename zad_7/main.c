@@ -1,49 +1,70 @@
 /*
   * Generate matrix 10x10 of random numbers;
   * Save it to a txt file
-  * Sort the matrix regarding each column's elements' values
+  * Sort the matrix regarding each column's elements' values, in descending order
   * Append sorted results to the file
 */
 
-#include "main.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-int main(void)
-{
-  double matrix[10][10]; // Matrix 10x10 of random numbers
+
+/* Generate random numbers from this seed. */
+#define SEED 62
+
+
+void randomNumbersMatrix(double [][10]);
+void saveMatrixToFile(double [][10], char *, char *, char *);
+void sortColumns(double [][10]);
+
+
+int main(void) {
+  /* Matrix 10x10 of random numbers */
+  double matrix[10][10];
+
   randomNumbersMatrix(matrix);
 
+  /* Save matrix of random values */
   saveMatrixToFile(
     matrix,
     "results.txt",
     "w",
-    "Matrix 10x10 of random numbers:"
-  );
+    "Matrix 10x10 of random numbers:\n");
 
   sortColumns(matrix);
 
+  /* Save matrix of sorted values */
   saveMatrixToFile(
     matrix,
     "results.txt",
     "a",
-    "Matrix 10x10 of numbers sorted in descending order:"
-  );
-
-  showMatrix(matrix, 10);
+    "Matrix 10x10 of numbers sorted in descending order:\n");
 
   return 0;
 }
 
 
+/* Generate a matrix filled with random numbers */
+void randomNumbersMatrix(double matrix[][10]) {
+  srand(SEED);
+
+  for (int i = 0; i < 10; i++)
+    for (int j = 0; j < 10; j++)
+      matrix[i][j] = rand() % 100;
+}
+
+
+/* Saves specified array to a file. Takes the matrix, file name, mode in which file should be saved (e.g. "r"), message to label the data in the file. */
 void saveMatrixToFile(
-                    double matrix[][10],
-                    char *filename,
-                    char *mode,
-                    char *msg) {
-  // File pointer
+  double matrix[][10],
+  char *filename,
+  char *mode,
+  char *msg) {
+
   FILE *file = fopen(filename, mode);
 
   if (file != NULL) {
-    // Matrix entires
+    /* Matrix entires */
     fprintf(file, "%s", msg);
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++)
@@ -57,67 +78,83 @@ void saveMatrixToFile(
 }
 
 
-void randomNumbersMatrix(double matrix[][10])
-{
-  srand(SEED);
-
-  for (int i = 0; i < 10; i++)
-    for (int j = 0; j < 10; j++)
-      matrix[i][j] = rand() % 100;
-}
-
-
-void exch(double v[], int n, int m)
-{
+/* Exchange values of two variables of an array */
+void exch(double v[], int n, int m) {
   double temp = v[n];
   v[n] = v[m];
   v[m] = temp;
 }
 
 
+/* Return true when first number is greater than the second */
 short compare(double a, double b) {
-  return (a - b) > 0;
+  return (a - b) > 0; // True when a > b
 }
 
 
+/*
+  * Logic for quicksort. Performs exchanges in two cases: value on the side of the pivot, where it should be smaller than the piot is higher or vice versa; or new pivot is exchanged with the previous one (because it hasn't been compared yet).
+  * Parameters: array to sort, index of a value that should be smaller, index of value that should be higher
+*/
 int partition(double v[], int lo, int hi) {
+  /* Index of an element with higher value than pivot, on the side, where elements' values are ought to be lower */
   int i = lo;
+  /* Index of an element with lower value than pivot, on the side, where elements' values are ought to be higher */
   int j = hi+1;
+  /* Pivot */
   double item = v[lo];
-  
+
   while (1) {
+    /* Search for the i */
     while (compare(v[++i], item)) if (i == hi) break;
+    /* Search for the j */
     while (compare(item, v[--j])) if (j == lo) break;
+    /* End, when indexes meet */
     if (i >= j) break;
+    /* Exchange values of elements standing on the wrong side of the pivot */
     exch(v, i, j);
   }
+
+  /* Exchange pivot with an element with index j */
   exch(v, lo, j);
+  /* New pivot */
   return j;
 }
 
 
+/* Sort an array in descending order; takes array, lowest and highest indexes of the subarray that should be sorted. */
 void quicksort(double v[], int lo, int hi) {
+  /* Base case */
   if (hi <= lo) return;
+  /* New pivot */
   int j = partition(v, lo, hi);
+  /* Sort left side */
   quicksort(v, lo, j-1);
+  /* Sort right side */
   quicksort(v, lo+1, hi);
 }
 
 
-void sortColumns(double matrix[][10])
-{
-  double col[10]; // column
+/* Sort the matrix regarding each column's elements' values, in descending order */
+void sortColumns(double matrix[][10]) {
+  /* Column */
+  double col[10];
 
   for (int i = 0; i < 10; i++) {
-    int k = 0; // counter for column
+    /* Index for the column each entry */
+    int k = 0;
 
+    /* Extract single column */
     for (int j = 0; j < 10; j++)
-      col[k++] = matrix[j][i]; // write from matrix to col
+      /* Write from matrix to col */
+      col[k++] = matrix[j][i];
 
     quicksort(col, 0, 9);
     
-    k = 0; // reset k
+    /* Reset k */
+    k = 0;
     for (int j = 0; j < 10; j++)
-      matrix[j][i] = col[k++]; // write from column to matrix
+      /* Write from column to matrix */
+      matrix[j][i] = col[k++];
   }
 }

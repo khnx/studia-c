@@ -1,77 +1,115 @@
-#include "main.h" // libraries
+/*
+  * Read a matrix M from a file.
+  * Sort elements of the matrix rows in descending order, denote as M_sort.
+  * Sorting algorithm: bubble sort.
+  * Select the highest value of each column of the matrix from under the main diagonal, denote as f_j(a_ij).
+  * Calculate product F of f_j(a_ij) as F(f_j(a_ij)).
+  * Save the results of M_sort, f_j(a_ij), F(f_j(a_ij)) to a file.
+*/
+
+#include <stdio.h>
+#include <math.h>
+
+
+void importMatrix(double [][10]);
+void sortMatrix(double [][10]);
+void selectF(double [][10], double [][10]);
+void selectHighest(double [][10], double []);
+double product(double []);
+void saveResults(double [][10], double [], double);
+
 
 int main(void)
 {
-  double matrix[10][10]; // Space for matrix 10x10
+  /* Space for matrix 10x10 */
+  double matrix[10][10];
 
-  importMatrix(matrix); // Import
+  importMatrix(matrix);  
+  sortMatrix(matrix);
   
-  sortMatrix(matrix); // Sorting
-  
-  // Get cols below main diagonal, populate remaining with nan
-  double diagonalMatrix[10][10]; // Cols below diagonal matrix
+  /* Get cols below main diagonal, populate remaining with nan */
+  /* Cols below diagonal matrix */
+  double diagonalMatrix[10][10];
   selectF(matrix, diagonalMatrix);
   
-  double max[10]; // Highest value from each diagonal col
+  /* Highest value from each diagonal col */
+  double max[10];
   selectHighest(diagonalMatrix, max);
   
-  double productVal = product(max); // Product of diagonal cols' max
+  /* Product of diagonal cols' max */
+  double productVal = product(max);
   
-  saveResults(matrix, max, productVal); // Save resultst to txt file
+  /* Save resultst to txt file */
+  saveResults(matrix, max, productVal);
 
   return 0;
 }
 
 
+/* Import matrix from "matrix.txt" file */
 void importMatrix(double matrix[][10]) {
-  FILE *file = fopen("matrix.txt", "r"); // Matrix file
+  char *filename = "matrix.txt";
+  char *filemode = "r";
+  FILE *file = fopen(filename, filemode);
 
-  double fp; // Number
-  int isEOF; // Is EOF encountered
-  int i = 0; // Row counter
-  int j = 0; // Column counter
+  /* Single number from the file */
+  double fp;
+  /* Is EOF encountered */
+  int isEOF;
+  /* Row counter */
+  int i = 0;
+  /* Column counter */
+  int j = 0;
+
   do {
     isEOF = fscanf(file, "%lf", &fp);
     
-    if (j >= 10) // Go to a new row
+    /* Go to a new row */
+    if (j >= 10)
     {
       j = 0;
       i++;
     }
-    if (isEOF != EOF) // Don't assign EOF
+    /* Don't assign EOF */
+    if (isEOF != EOF)
       matrix[i][j] = fp;
 
-    j++; // Each new entry
+    /* Each new entry */
+    j++;
   } while (isEOF != EOF);
 
   fclose(file);
 }
 
 
-void swap(double *a, double *b) {
+/* Exchange values of two variables */
+void exch(double *a, double *b) {
   double temp = *a;
   *a = *b;
   *b = temp;
 }
 
 
+/* Sort an array according to monotonicity, ascending order  - 1, descending - 0 */
 void bubbleSort(double arr[], int n, int monotonicity) {
-  int swapCounter = 1; //
+  int swapCounter = 1;
 
-  // Do until no more swaps have been encountered
+  /* Do until no more swaps have been encountered */
   while(swapCounter) {
     swapCounter = 0;
 
     for (int i = 0; i < n-1; i++)
     {
-      if (monotonicity) { // Increasing
+      /* Ascending order */
+      if (monotonicity) {
         if (arr[i] < arr[i + 1]) {
-          swap(&arr[i], &arr[i + 1]);
+          exch(&arr[i], &arr[i + 1]);
           swapCounter++;
         }
-      } else { // Decreasing
+        /* Descending order */
+      } else {
         if (arr[i] > arr[i + 1]) {
-          swap(&arr[i], &arr[i + 1]);
+          exch(&arr[i], &arr[i + 1]);
           swapCounter++;
         }
       }
@@ -80,19 +118,23 @@ void bubbleSort(double arr[], int n, int monotonicity) {
 }
 
 
+/* Sort all rows of a  matrix */
 void sortMatrix(double arr[][10]) {
   for (int i = 0; i < 10; i++)
     bubbleSort(arr[i], 10, 1);
 }
 
 
+/* Select entries from under the main diagonal of the matrix */
 void selectF(double arr[][10], double diagonal[][10]) {
-  int m = 0; // diagonal rows
-  int n = 0; // diagonal cols
+  /* Diagonal rows */
+  int m = 0;
+  /* Diagonal columns */
+  int n = 0;
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 10; j++) {
       if (i > j) diagonal[m][n] = arr[i][j];
-      // Populate with nans (avoid trash values)
+      /* Populate with nans to avoid trash values */
       else diagonal[m][n] = NAN;
       n++;
     }
@@ -102,6 +144,7 @@ void selectF(double arr[][10], double diagonal[][10]) {
 }
 
 
+/* Select a column from a matrix */
 void selectCol(double arr[][10], double col[], int n) {
   int j = 0;
   for (int i = 0; i < 10; i++)
@@ -109,57 +152,61 @@ void selectCol(double arr[][10], double col[], int n) {
 }
 
 
+/* Select the highest values in the array arr, return them in the array max */
 void selectHighest(double arr[][10], double max[]) {
-  double col[10]; // Placeholder for each column
+  /* Placeholder for each column */
+  double col[10];
 
   for (int i = 0; i < 10; i++) {
-    selectCol(arr, col, i); // Select a col
-    extern void bubbleSort(double [], int, int);
-    bubbleSort(col, 10, 1); // Sort it
+    selectCol(arr, col, i);
+    bubbleSort(col, 10, 1);
 
     int j = 0;
     while (isnan(col[j])) j++;
 
-    max[i] = col[j]; // Select the highest values
-    if (j == 10) max[i] = NAN; // Whole column is NAN
+    /* Select the highest values */
+    max[i] = col[j];
+    /* Whole column is NANs; no real values in a column */
+    if (j == 10) max[i] = NAN;
   }
 }
 
 
+/* Return product of the given array */
 double product(double arr[]) {
-  double p = 1; // Product
+  /* Product */
+  double p = 1;
   for (int i = 0; i < 10; i++)
+    /* Ensure none of the entries are NAN */
     if(!isnan(arr[i]))
       p *= arr[i];
   return p;
 }
 
 
+/* Save results of the task to a txt file */
 void saveResults(double matrix[][10], double max[], double productVal) {
-  // File name string buffer
-  char filename[32];
-  createName(filename);
-  // File pointer
-  FILE *save = fopen(filename, "w");
+  char *filename = "results.txt";
+  FILE *file = fopen(filename, "w");
 
-  if (save != NULL) {
-    // Sorted matrix entires
-    fprintf(save, "%s", "Sorted matrix:\n");
+  if (file != NULL) {
+    /* Sorted matrix entires */
+    fprintf(file, "%s", "Sorted matrix:\n");
     for (int i = 0; i < 10; i++) {
       for(int j = 0; j < 10; j++)
-        fprintf(save, "%8.1f", matrix[i][j]);
-      fprintf(save, "%c", '\n');
+        fprintf(file, "%8.1f", matrix[i][j]);
+      fprintf(file, "%c", '\n');
     }
 
-    // Entries from under main diagonal, highest values
-    fprintf(save, "%s", "Under main diagonal, col min:\n");
+    /* Entries from under main diagonal, highest values */
+    fprintf(file, "%s", "Under main diagonal, col min:\n");
     for (int i = 0; i < 10; i++)
-      fprintf(save, "%8.1f", max[i]);
+      fprintf(file, "%8.1f", max[i]);
 
-    // Product value
-    fprintf(save, "%s", "\nProduct value:\n");
-    fprintf(save, "%16.6e", productVal);
+    /* Product value */
+    fprintf(file, "%s", "\nProduct value:\n");
+    fprintf(file, "%16.6e", productVal);
   }
 
-  fclose(save);
+  fclose(file);
 }

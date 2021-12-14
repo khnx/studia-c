@@ -1,37 +1,39 @@
-#include "main.h"
+/*
+  * Calculate values of given function in specified domain.
+  * Save results to a file.
+  * Draw a plot for the results.
+*/
 
-// Carry out equations
+#include <stdio.h>
+#include <math.h>
+
+
 int main(void)
 {
-  double xp = 1.2; // xp - domain boundary low
-  double xk = 3.1; // xk - domain boundary high
+  /* Domain min */
+  const double xp = 1.2;
+  /* Domain max */
+  const double xk = 3.1;
 
-  getRecords(xp, xk);
+  char *filename = "results.dat";
 
-  return 0;
-}
+  /* Domain step */
+  double dx = (xk - xp) / 100;
 
-void getRecords(double xp, double xk)
-{
-  const double a = 5.; // Equation const
-  const double b = 3.; // Equation const
+  FILE *file = fopen(filename, "w");
 
-  char filename[32]; // File name
-  createName(filename);
-
-  double dx = (xk - xp) / 100; // Domain step
-  FILE *file = fopen(filename, "w"); // File pointer
-
-  if (file != NULL) // Ensure file exists
-    for (double x = xp; x < xk; x += dx) { // Step
-      double log1 = log(x) / log(10); // Step result
+  /* Ensure file exists */
+  if (file != NULL)
+    for (double x = xp; x < xk; x += dx) {
+      double log1 = log(x) / log(10);
+      /* Save if result is a real number */
       if (!isnan(log1)) {
-        double y = a / (b + pow(log1, 2));
+        double y = 5. / (3. + pow(log1, 2));
         fprintf(file, "%f\t%f\n", x, y);
       }
     }
 
-  fclose(file); // Close file
+  fclose(file);
 
-  return;
+  return 0;
 }
