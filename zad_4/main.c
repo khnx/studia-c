@@ -1,3 +1,12 @@
+/**
+ * @file main.c
+ * @author Radoslaw Smoter (radoslaw.smoter@student.pk.edu.pl)
+ * @version 0.1
+ * @date 2021-12-16
+ * 
+ * @copyright Copyright (c) 2021
+ */
+
 /*
   * Calculate value of the given function.
   * Select 3 digits {3, 5, 6} from the function output and display them in different counting systems: binary, ocatal, hexadecimal.
@@ -7,19 +16,21 @@
 #include <math.h>
 
 
+double doMath(double);
+void showValues(double);
+
+
 int main(void)
 {
   /* Domain */
   double x = 1.2;
 
   /* Result of the mathematical function */
-  double doMath(double);
   double value = doMath(x);
 
   /* If the mathematical function resulted in non-number value, it can't be proceeded, because it doesn't have any digits to show. */
   if (value == NAN) return -1;
 
-  void showValues(double);
   showValues(value);
   
   return 0;

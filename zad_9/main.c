@@ -56,7 +56,7 @@ void approximate(double A[][N/2], double B[]);
 int main(int argc, char const *argv[])
 {
   /* filecontent is an array with format XYXY... */
-  double *filecontent = load_data("plik.txt");
+  double *filecontent = load_data("a.txt");
 
   /* End the program, because it failed: loaddata did not return valid data. */
   if (filecontent == NULL) {
@@ -77,31 +77,29 @@ int main(int argc, char const *argv[])
     for (int j = 0; j < N/2; j++)
       approx[i][j] = pow(X[i], j);
 
-  printf("\n");
-
   approximate(approx, Y);
 
   return 0;
 }
 
 
-/* Function loads exactly n floating point numbers and returns them as an array. */
+/* Loads exactly n floating point numbers and returns them as an array. */
 double *load_data(char *filename) {
-  /* Filename is an Empty String. */
+  /* Filename is an empty string. */
   if (strcmp(filename, "") == 0) {
     fprintf(stderr, "Error: File Name is an Empty String.\n");
     return ERR_EMPTY_FILENAME;
   }
 
-  /* Memory for n Elements. */
+  /* Memory for n elements. */
   double *filecontent = malloc(sizeof(double) * N);
 
   FILE *file = fopen(filename, "r");
 
   if (file != NULL) {
-    /* End of the File Indicator. */
+    /* End of the file indicator. */
     _Bool isEOF = 1;
-    /* Buffer for the File Output. */
+    /* Buffer for the file output */
     double *fp = malloc(sizeof(double));
 
     long long i;
@@ -110,17 +108,16 @@ double *load_data(char *filename) {
       filecontent[i] = *fp;
     }
 
-    /* Add a flag to end the array. */
     free(fp);
     fclose(file);
   }
-  /* The File Did Not Open Correctly. */
+  /* The File did not open correctly */
   else {
     fprintf(stderr, "Error: The File %s Did Not Open Correctly.\n", filename);
     return ERR_INVALID_FILE;
   }
 
-  /* Everything Handles Correctly. */
+  /* Everything went correctly */
   return filecontent;
 }
 
@@ -144,25 +141,37 @@ void split_data(double *A, double *X, double *Y) {
 }
 
 
+/* Colors: reset, bold red, bold yellow */
+#define C_RESET "\e[0m"
+#define C_BRED "\e[1;31m"
+#define C_BYEL "\e[1;33m"
+
+
+/* Print results of the approximation (coefficients) and number of iterations. */
 void printV(double v[], unsigned long long iter) {
   /* Coefficents */
   for (int i = 0; i < N/2; i++)
     printf("%11s%d", "a_", i);
   printf("\n");
   for (int i = 0; i < N/2; i++)
-    printf("%12.5lf", v[i]);
+    printf("%s%12.5lf%s", C_BYEL, v[i], C_RESET);
   printf("\n");
 
   /* Number of iteration */
-  printf("Current iteration number is: %llu\n", iter++);
-  for (int i = 0; i < 50; i++)
+  printf("Current iteration number is: %s%llu%s\n",C_BRED, iter++, C_RESET);
+  for (int i = 0; i < 60; i++)
     printf("%s", "-");
-  printf("\n\n");
+  printf("\n");
 }
 
+
+/* Calculate absolute errors between iterations of approximations of the coefficients. Ends approximation, when all of the errors drop below the level of significance. */
 _Bool approx_err(double error[], double v[]) {
+  /* Indicates level of significance. */
+  const double MAX_ERROR = 1e-14;
+
   for (int i = 0; i < N/2; i++)
-    if (fabs(v[i] - error[i]) > 1e-1)
+    if (fabs(v[i] - error[i]) > MAX_ERROR)
       return 1;
   return 0;
 }
@@ -205,7 +214,11 @@ void approximate(double X[][N/2], double Y[]) {
       coeff[i] = row_sum / X[i][i];
     }
 
+    /* Prevent iter from overflow. */
+    if (iter == __INT_MAX__)
+      break;
     iter++;
   }
+
   printV(coeff, iter);
 }
