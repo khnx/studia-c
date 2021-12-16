@@ -5,7 +5,6 @@
  * @date 2021-12-14
  * 
  * @copyright Copyright (c) 2021
- * 
  */
 
 /*
@@ -26,11 +25,9 @@
   a_1 = 1 / x_1^0 * (y_1 - a_2 * x_1^1 - a_3 * x_1^2)
   a_2 = 1 / x_2^1 * (y_2 - a_1 * x_2^0 - a_3 * x_2^2)
   a_3 = 1 / x_3^2 * (y_3 - a_1 * x_3^0 - a_2 * x_3^1)
-  count a_1 with a_2 = 0 and a_3 = 0
-  repeat for m times
-    count a_2  with a_1 from the previous result and with preset a_3
-    count a_3 with the two previous results
-    coutn a_1 with the two previus results
+  set coefficients to zeros
+  repeat for until changes between coefficients are insignificant
+    cout i-th coefficient with 
 */
 
 
@@ -52,10 +49,8 @@
 
 
 double *load_data(char *);
-double *approx_func(double);
 void split_data(double *, double *, double *);
-double **extract(double *[], double *);
-void approx_val(double **M);
+void approximate(double A[][N/2], double B[]);
 
 
 int main(int argc, char const *argv[])
@@ -77,35 +72,14 @@ int main(int argc, char const *argv[])
   /* Free filecontent, because it's no longer used. */
   if (filecontent != NULL) free(filecontent);
 
-  double *approx[N/2];
+  double approx[N/2][N/2];
   for (int i = 0; i < N/2; i++)
-    approx[i] = approx_func(X[i]);
-  
-  for (int i = 0; i < N/2; i++) {
     for (int j = 0; j < N/2; j++)
-      printf("%15.7lf", *(*(approx+i)+j) );
-    printf("\n");
-  }
-
-  printf("\n");
-  
-  double **extracteddata = extract(approx, Y);
-
-  for (int i = 0; i < N/2; i++) {
-    for (int j = 0; j < N/2; j++)
-      printf("%15.7lf", *(*(extracteddata+i)+j));
-    printf("\n");
-  }
-
-  approx_val(extracteddata);
+      approx[i][j] = pow(X[i], j);
 
   printf("\n");
 
-  for (int i = 0; i < N/2; i++) {
-    for (int j = 0; j < N/2; j++)
-      printf("%15.7lf", *(*(extracteddata+i)+j));
-    printf("\n");
-  }
+  approximate(approx, Y);
 
   return 0;
 }
@@ -154,11 +128,11 @@ double *load_data(char *filename) {
 /* Splits one array with length n to two arrays with length n/2. With every odd element in one array and every even in the other one. */
 void split_data(double *A, double *X, double *Y) {
   /* For A */
-  unsigned long long i = 0;
+  int i = 0;
   /* For X */
-  unsigned long long k = 0;
+  int k = 0;
   /* For Y */
-  unsigned long long j = 0;
+  int j = 0;
 
   while (i < N) {
     if (i % 2 == 0)
@@ -170,79 +144,68 @@ void split_data(double *A, double *X, double *Y) {
 }
 
 
-/* Returns an array. For x: [x^0, x^1, ..., x^(n-1)], where n is the length of the polynomial. */
-double *approx_func(double x) {
-  /* Approximation function */
-  double *approx = malloc(sizeof(double) * N / 2);
+void printV(double v[], unsigned long long iter) {
+  /* Coefficents */
+  for (int i = 0; i < N/2; i++)
+    printf("%11s%d", "a_", i);
+  printf("\n");
+  for (int i = 0; i < N/2; i++)
+    printf("%12.5lf", v[i]);
+  printf("\n");
 
-  /* Number of approximation elements in the approximation function */
-  long long i = 0;
-  /* Sets the approximation function up to the powerset of n-1 (including x^0) and not over x^4. */
-  while (i < N / 2) {
-    approx[i] = pow(x, i);
-    i++;
-  }
+  /* Number of iteration */
+  printf("Current iteration number is: %llu\n", iter++);
+  for (int i = 0; i < 50; i++)
+    printf("%s", "-");
+  printf("\n\n");
+}
 
-  return approx;
+_Bool approx_err(double error[], double v[]) {
+  for (int i = 0; i < N/2; i++)
+    if (fabs(v[i] - error[i]) > 1e-1)
+      return 1;
+  return 0;
 }
 
 
-/* Change the extended matrix (matrix with results) into a form that extracts a factor from the diagonal from each row, and sets this factor to 1, so all remaining factors from that row are divided by this factor. */
-double **extract(double *matrix[], double results[]) {
-  /* All factors with results, but factors on the diagonals. */
-  double **A = malloc(sizeof(double) * (N/2));
+/* Find coefficients for the approximation polynomial.*/
+void approximate(double X[][N/2], double Y[]) {
+  /* Iteration number */
+  unsigned long long iter = 1;
+  /* Coefficients of the approximation equation */
+  double coeff[N/2];
+  /* Error between each iteration of approximation. Has exact value as coeff in the previous iteration. Initialised to ones. */
+  double error[N/2];
+
   for (int i = 0; i < N/2; i++) {
-    double *val = malloc(sizeof(double) * (N/2));
-    *(A+i) = val;
+    for (int j = 0; j < N/2; j++) {
+      /* populate coeff with zeros */
+      coeff[i] = 0;
+      /* populate error with ones */
+      error[i] = 1;
+    }
   }
 
-  /* Onto matrix A:
-  add elements from matrix, except from the diagonal,
-  multiply them by -1.0,
-  add elements from results to each corresponding row,
-  divide each row by corresponding factor from the diagonal. */
-  for (int i = 0; i < N/2; i++) {
-    /* Elements from the diagonal. */
-    double factor;
-    /* Current element in A. */
-    int m = 0;
+  /* Repeat until error is significant. */
+  while (approx_err(error, coeff)) {
+    /* Calculate new errors for each coeff */
+    for (int i = 0; i < N/2; i++)
+      error[i] = coeff[i];
 
-    for (int j = 0; j < N/2; j++) {
-      if (i != j) {
-        *(*(A+i)+m) = *(*(matrix+i)+j) * -1.0;
-        m++;
-      } else
-        factor = *(*(matrix+i)+j);
+    for (int i = 0; i < N/2; i++) {
+      /* Sum of elements (coefficients * powerset) from each row */
+      double row_sum = 0;
+      for (int j = 0; j < N/2; j++)
+        if (i != j)
+          /* Multiply by -1.0, because it's substraction */
+          row_sum += X[i][j] * coeff[j] * (-1.0);
+      /* Add Y's value to row */
+      row_sum += Y[i];
+      /* Divide all elements from the row by X's value that stands before the calculated coefficient. */
+      coeff[i] = row_sum / X[i][i];
     }
 
-    /* Elements from the results. */
-    *(*(A+i)+m) = *(results+i);
-    m++;
-
-    /* Divide by factor */
-    for (int j = 0; j < N/2; j++)
-      *(*(A+i)+j) /= factor;
+    iter++;
   }
-
-  return A;
-}
-
-
-double sum_matrix(double **M) {
-  double sum = 0;
-  for (int i = 0; i < N/2; i++)
-    for (int j = 0; j < N/2; j++)
-      sum += *(*(M+i)+j);
-  return sum;
-}
-
-
-/* Matrix can now be represented as this equation:
-  a_1 = 1 / x_1^0 * (- a_2 * x_1^1 - a_3 * x_1^2 + y_1)
-  a_2 = 1 / x_2^1 * (- a_1 * x_2^0 - a_3 * x_2^2 + y_2)
-  a_3 = 1 / x_3^2 * (- a_1 * x_3^0 - a_2 * x_3^1 + y_3)
-
- */
-void approx_val(double **M) {
-  
+  printV(coeff, iter);
 }
