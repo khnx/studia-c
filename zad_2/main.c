@@ -1,3 +1,12 @@
+/**
+ * @file main.c
+ * @author Radoslaw Smoter (radoslaw.smoter@student.pk.edu.pl)
+ * @version 0.1
+ * @date 2021-12-16
+
+ * @copyright Copyright (c) 2021
+ */
+
 /*
   * Calculate given functions with their respectable domains.
   * Results save to a file.
@@ -7,42 +16,46 @@
 #include <stdio.h>
 #include <math.h>
 
-/* Calculate mathematical function */
+/* Calculate mathematical functions */
 double countFirst(double x);
-/* Calculate mathematical function */
 double countSecond(double x);
-/* Calculate mathematical function */
 double countThird(double x);
 
 
 int main(void)
 {
-  /* Domain min */
-  double xp = .5;
-  /* Domain max */
-  double xk = .9;
+  /* Domain min/max*/
+  double domain[] = { 0.5, 0.9 };
   /* Domain step */
-  double dx = 0.002;
+  double step = 0.002;
 
-  char *filename = "results.dat";
-
-  FILE *file = fopen(filename, "w");
+  FILE *file = fopen("results.dat", "w");
   
   /* Ensure file exists */
-  if (file != NULL)
-    for (double x = xp; x < xk; x += dx) {
+  if (file != NULL) {
+    for (double x = domain[0]; x < domain[1]; x += step) {
       /* Step result */
       double y;
 
       /* If in domain, do respectable function */
-      if (x < .6)  y = countFirst(x);
-      else if (x >= .6 && x < .7) y = countSecond(x);
-      else y = countThird(x);
+      if (x < .6)
+        y = countFirst(x);
+      else if (x >= .6 && x < .7)
+        y = countSecond(x);
+      else
+        y = countThird(x);
       
-      fprintf(file, "%f\t%f\n", x, y);
+      if ( ! isnan(y))
+        fprintf(file, "%10.5f%10.5f\n", x, y);
+      
     }
-
-  fclose(file); // Close file
+    fclose(file);
+  }
+    /* Error: File did not open correctly. */
+    else {
+      fprintf(stderr, "Error: File did not open correctly.\n");
+      return -1;
+    }
 
   return 0;
 }

@@ -1,3 +1,12 @@
+/**
+ * @file main.c
+ * @author Radoslaw Smoter (radoslaw.smoter@student.pk.edu.pl)
+ * @version 0.1
+ * @date 2021-12-16
+ * 
+ * @copyright Copyright (c) 2021
+ */
+
 /*
 	* Calculate given function.
 	* Results save to a file.
@@ -38,13 +47,15 @@ int main(void)
 	printf("THE_SUM = %.6f\n", sum);
 
 	/* Save to a file */
-	char *filename = "results.txt";
-	char *filemode = "w";
-	FILE *pFile;
-	pFile = fopen(filename, filemode);
-	if (pFile != NULL) {
-		fprintf(pFile, "THE_SUM = %.6f\n", sum);
-		fclose(pFile);
+	FILE *file = fopen("results.txt", "w");
+	if (file != NULL) {
+		fprintf(file, "THE_SUM = %.6f\n", sum);
+		fclose(file);
+	}
+	/* File did not open correctly. */
+	else {
+		fprintf(stderr, "Error: File did not open correctly.\n");
+		return -1;
 	}
 
   return 0;

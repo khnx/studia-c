@@ -1,8 +1,17 @@
+/**
+ * @file main.c
+ * @author Radoslaw Smoter (radoslaw.smoter@student.pk.edu.pl)
+ * @version 0.1
+ * @date 2021-12-17
+ * 
+ * @copyright Copyright (c) 2021
+ */
+
 /*
   * Read a matrix M from a file.
   * Sort elements of the matrix rows in descending order, denote as M_sort.
   * Sorting algorithm: bubble sort.
-  * Select the highest value of each column of the matrix from under the main diagonal, denote as f_j(a_ij).
+  * Select the lowest value of each column of the matrix from under the main diagonal, denote as f_j(a_ij).
   * Calculate product F of f_j(a_ij) as F(f_j(a_ij)).
   * Save the results of M_sort, f_j(a_ij), F(f_j(a_ij)) to a file.
 */
@@ -14,7 +23,7 @@
 void importMatrix(double [][10]);
 void sortMatrix(double [][10]);
 void selectF(double [][10], double [][10]);
-void selectHighest(double [][10], double []);
+void selectLowest(double [][10], double []);
 double product(double []);
 void saveResults(double [][10], double [], double);
 
@@ -32,15 +41,15 @@ int main(void)
   double diagonalMatrix[10][10];
   selectF(matrix, diagonalMatrix);
   
-  /* Highest value from each diagonal col */
-  double max[10];
-  selectHighest(diagonalMatrix, max);
+  /* Lowest value from each diagonal col */
+  double min[10];
+  selectLowest(diagonalMatrix, min);
   
-  /* Product of diagonal cols' max */
-  double productVal = product(max);
+  /* Product of diagonal cols' min */
+  double productVal = product(min);
   
   /* Save resultst to txt file */
-  saveResults(matrix, max, productVal);
+  saveResults(matrix, min, productVal);
 
   return 0;
 }
@@ -76,7 +85,7 @@ void importMatrix(double matrix[][10]) {
 
     /* Each new entry */
     j++;
-  } while (isEOF != EOF);
+  } while (isEOF != EOF && (i*10 + j) < 100);
 
   fclose(file);
 }
@@ -152,22 +161,22 @@ void selectCol(double arr[][10], double col[], int n) {
 }
 
 
-/* Select the highest values in the array arr, return them in the array max */
-void selectHighest(double arr[][10], double max[]) {
+/* Select the lowest values in the array arr, return them in the array max */
+void selectLowest(double arr[][10], double min[]) {
   /* Placeholder for each column */
   double col[10];
 
   for (int i = 0; i < 10; i++) {
     selectCol(arr, col, i);
-    bubbleSort(col, 10, 1);
+    bubbleSort(col, 10, 0);
 
     int j = 0;
     while (isnan(col[j])) j++;
 
     /* Select the highest values */
-    max[i] = col[j];
+    min[i] = col[j];
     /* Whole column is NANs; no real values in a column */
-    if (j == 10) max[i] = NAN;
+    if (j == 10) min[i] = NAN;
   }
 }
 
@@ -206,7 +215,12 @@ void saveResults(double matrix[][10], double max[], double productVal) {
     /* Product value */
     fprintf(file, "%s", "\nProduct value:\n");
     fprintf(file, "%16.6e", productVal);
-  }
 
-  fclose(file);
+    fclose(file);
+  }
+  /* Error */
+  else {
+    fprintf(stderr, "Error: File did not open correctly.\n");
+    return;
+  }
 }

@@ -13,14 +13,14 @@
 #define SEED 62
 
 
-void randomNumbersMatrix(double [][10]);
-void saveMatrixToFile(double [][10], char *, char *, char *);
-void sortColumns(double [][10]);
+void randomNumbersMatrix(int [][10]);
+void saveMatrixToFile(int [][10], char *, char *, char *);
+void sortColumns(int [][10]);
 
 
 int main(void) {
   /* Matrix 10x10 of random numbers */
-  double matrix[10][10];
+  int matrix[10][10];
 
   randomNumbersMatrix(matrix);
 
@@ -45,7 +45,7 @@ int main(void) {
 
 
 /* Generate a matrix filled with random numbers */
-void randomNumbersMatrix(double matrix[][10]) {
+void randomNumbersMatrix(int matrix[][10]) {
   srand(SEED);
 
   for (int i = 0; i < 10; i++)
@@ -56,7 +56,7 @@ void randomNumbersMatrix(double matrix[][10]) {
 
 /* Saves specified array to a file. Takes the matrix, file name, mode in which file should be saved (e.g. "r"), message to label the data in the file. */
 void saveMatrixToFile(
-  double matrix[][10],
+  int matrix[][10],
   char *filename,
   char *mode,
   char *msg) {
@@ -68,26 +68,31 @@ void saveMatrixToFile(
     fprintf(file, "%s", msg);
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++)
-        fprintf(file, "%6.1lf", matrix[i][j]);
+        fprintf(file, "%6i", matrix[i][j]);
       fprintf(file, "\n");
     }
     fprintf(file, "\n");
+    
+    fclose(file);
+  }
+  else {
+    fprintf(stderr, "Error: Can not open the file.");
+    return;
   }
 
-  fclose(file);
 }
 
 
 /* Exchange values of two variables of an array */
-void exch(double v[], int n, int m) {
-  double temp = v[n];
+void exch(int v[], int n, int m) {
+  int temp = v[n];
   v[n] = v[m];
   v[m] = temp;
 }
 
 
 /* Return true when first number is greater than the second */
-short compare(double a, double b) {
+short compare(int a, int b) {
   return (a - b) > 0; // True when a > b
 }
 
@@ -96,13 +101,13 @@ short compare(double a, double b) {
   * Logic for quicksort. Performs exchanges in two cases: value on the side of the pivot, where it should be smaller than the piot is higher or vice versa; or new pivot is exchanged with the previous one (because it hasn't been compared yet).
   * Parameters: array to sort, index of a value that should be smaller, index of value that should be higher
 */
-int partition(double v[], int lo, int hi) {
+int partition(int v[], int lo, int hi) {
   /* Index of an element with higher value than pivot, on the side, where elements' values are ought to be lower */
   int i = lo;
   /* Index of an element with lower value than pivot, on the side, where elements' values are ought to be higher */
   int j = hi+1;
   /* Pivot */
-  double item = v[lo];
+  int item = v[lo];
 
   while (1) {
     /* Search for the i */
@@ -123,7 +128,7 @@ int partition(double v[], int lo, int hi) {
 
 
 /* Sort an array in descending order; takes array, lowest and highest indexes of the subarray that should be sorted. */
-void quicksort(double v[], int lo, int hi) {
+void quicksort(int v[], int lo, int hi) {
   /* Base case */
   if (hi <= lo) return;
   /* New pivot */
@@ -136,9 +141,9 @@ void quicksort(double v[], int lo, int hi) {
 
 
 /* Sort the matrix regarding each column's elements' values, in descending order */
-void sortColumns(double matrix[][10]) {
+void sortColumns(int matrix[][10]) {
   /* Column */
-  double col[10];
+  int col[10];
 
   for (int i = 0; i < 10; i++) {
     /* Index for the column each entry */

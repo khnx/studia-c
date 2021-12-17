@@ -1,3 +1,12 @@
+/**
+ * @file main.c
+ * @author Radoslaw Smoter (radoslaw.smoter@student.pk.edu.pl)
+ * @version 0.1
+ * @date 2021-12-17
+ * 
+ * @copyright Copyright (c) 2021
+ */
+
 /*
   * Read a matrix M from a file.
   * Sort elements of the matrix in descending order, denote as M_sort.
@@ -12,8 +21,8 @@
 
 void importMatrix(double [][10]);
 void sortMatrix(double [][10]);
-void selectF(double arr[][10], double diagonal[][10]);
-void sumRows(double [][10], double ums[]);
+void selectF(double [][10], double [][10]);
+void sumRows(double [][10], double []);
 double product(double []);
 void saveResults(double [][10], double [], double);
 
@@ -47,33 +56,39 @@ void importMatrix(double matrix[][10]) {
   char *filemode = "r";
   FILE *file = fopen(filename, filemode);
 
-  /* Single number from the file */
-  double fp;
-  /* Is EOF encountered */
-  int isEOF;
-  /* Row counter */
-  int i = 0;
-  /* Column counter */
-  int j = 0;
+  if (file != NULL) {
+    /* Single number from the file */
+    double fp;
+    /* Is EOF encountered */
+    int isEOF;
+    /* Row counter */
+    int i = 0;
+    /* Column counter */
+    int j = 0;
 
-  do {
-    isEOF = fscanf(file, "%lf", &fp);
-    
-    /* Go to a new row */
-    if (j >= 10)
-    {
-      j = 0;
-      i++;
-    }
-    /* Don't assign EOF */
-    if (isEOF != EOF)
-      matrix[i][j] = fp;
+    do {
+      isEOF = fscanf(file, "%lf", &fp);
+      
+      /* Go to a new row */
+      if (j >= 10)
+      {
+        j = 0;
+        i++;
+      }
+      /* Don't assign EOF */
+      if (isEOF != EOF)
+        matrix[i][j] = fp;
 
-    /* Each new entry */
-    j++;
-  } while (isEOF != EOF);
+      /* Each new entry */
+      j++;
+    } while (isEOF != EOF && (i*10+j) < 100);
 
-  fclose(file);
+    fclose(file);
+  }
+  else {
+    fprintf(stderr, "Error: File did not open successfully.\n");
+    return;
+  }
 }
 
 
@@ -103,8 +118,7 @@ void shellSort(double v[], int n, int mode) {
 
 
 /* Convert array 10x10 to array 100 */
-void straightenMatrix(double array[], double matrix[][10])
-{
+void straightenMatrix(double array[], double matrix[][10]) {
   /* Index of array */
   int k = 0;
   for (int i = 0; i < 10; i++)
@@ -114,8 +128,7 @@ void straightenMatrix(double array[], double matrix[][10])
 
 
 /* Convert array 100 to matrix 10x10 */
-void makeMatrix(double matrix[][10], double array[0])
-{
+void makeMatrix(double matrix[][10], double array[]) {
   int k = 0;
   for (int i = 0; i < 10; i++)
     for (int j = 0; j < 10; j++)
@@ -200,7 +213,12 @@ void saveResults(double matrix[][10], double array[], double product) {
     /* Product value */
     fprintf(file, "%s", "\nProduct value:\n");
     fprintf(file, "%16.6e", product);
+  
+    fclose(file);
+  } 
+  else {
+    fprintf(stderr, "Error: File did not open correctly.\n");
+    return;
   }
 
-  fclose(file);
 }
