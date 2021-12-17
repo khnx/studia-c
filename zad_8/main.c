@@ -1,3 +1,12 @@
+/**
+ * @file main.c
+ * @author Radoslaw Smoter (radoslaw.smoter@student.pk.edu.pl)
+ * @version 0.1
+ * @date 2021-12-17
+ * 
+ * @copyright Copyright (c) 2021
+ */
+
 /*
   * Generate permutations considering letters with 6 elements in a set
   * Permutation algorithm: 1.11
