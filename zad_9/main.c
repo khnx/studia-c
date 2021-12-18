@@ -40,8 +40,13 @@ void split_data(double *, double *, double *);
 void approximate(double A[][N/2], double B[]);
 
 
+#include <time.h>
+
 int main(int argc, char const *argv[])
 {
+  double time_spent = 0.0;
+  clock_t begin_clock = clock();
+
   /* filecontent is an array with format XYXY... */
   double *filecontent = load_data("a.txt");
 
@@ -65,6 +70,10 @@ int main(int argc, char const *argv[])
       approx[i][j] = pow(X[i], j);
 
   approximate(approx, Y);
+
+  clock_t end_clock = clock();
+  time_spent += (double)(end_clock - begin_clock) / CLOCKS_PER_SEC;
+  printf("\nThe elapsed time is %lf seconds.\n", time_spent);
 
   return 0;
 }
