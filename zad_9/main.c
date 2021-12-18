@@ -2,6 +2,7 @@
  * @file main.c
  * @author Radoslaw Smoter (radoslaw.smoter@student.pk.edu.pl)
  * @version 0.1
+ * @brief Approximating a function with Gauss-Seidel method
  * @date 2021-12-14
  * 
  * @copyright Copyright (c) 2021
@@ -14,20 +15,6 @@
   * Select 5 pairs (x, y) from the txt file.
   * Create system of linear equations for all 5 (x, y).
   * Solve the system for all a_i, which are the approximation coefficients, using Gauss-Seidel method.
-*/
-
-/*
-  For 3 arguments:
-  a_1 * x_1^0 + a_2 * x_1^1 + a_3 * x_1^2 = y_1
-  a_1 * x_2^0 + a_2 * x_2^1 + a_3 * x_2^2 = y_2
-  a_1 * x_3^0 + a_2 * x_3^1 + a_3 * x_3^2 = y_3
-  Change it to:
-  a_1 = 1 / x_1^0 * (y_1 - a_2 * x_1^1 - a_3 * x_1^2)
-  a_2 = 1 / x_2^1 * (y_2 - a_1 * x_2^0 - a_3 * x_2^2)
-  a_3 = 1 / x_3^2 * (y_3 - a_1 * x_3^0 - a_2 * x_3^1)
-  set coefficients to zeros
-  repeat for until changes between coefficients are insignificant
-    cout i-th coefficient with 
 */
 
 
@@ -221,4 +208,15 @@ void approximate(double X[][N/2], double Y[]) {
   }
 
   printV(coeff, iter);
+
+  FILE *file = fopen("b.txt", "w");
+  if (file != NULL) {
+    for (int i = 0; i < N/2; i++)
+      fprintf(file, "%.5lf*x^%d\n", coeff[i], i);
+    fclose(file);
+  }
+  else {
+    fprintf(stderr, "Error: File did not open successfully.\n");
+    return;
+  }
 }
