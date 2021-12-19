@@ -4,6 +4,6 @@
 
 gcc -std=c99 -Wall main.c -o main -lm
 
-## System, na którym pisano programy
+## System
 
 Ubuntu 21.10
