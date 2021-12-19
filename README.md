@@ -2,7 +2,7 @@
 
 ## Polecenie do kompilacji
 
-gcc -std=c99 -Wall main.c -o main
+gcc -std=c99 -Wall main.c -o main -lm
 
 ## System, na którym pisano programy
 
