@@ -25,7 +25,7 @@
 
 
 /* Number of elements to pull out of the file. */
-#define N 10
+#define N 20
 
 /* loaddata did not return valid data. */
 #define ERR_EMPTY_FILECONTENT -10
@@ -150,7 +150,7 @@ void printV(double v[], unsigned long long iter) {
     printf("%11s%d", "a_", i);
   printf("\n");
   for (int i = 0; i < N/2; i++)
-    printf("%s%12.5lf%s", C_BYEL, v[i], C_RESET);
+    printf("%s%22.10lf%s", C_BYEL, v[i], C_RESET);
   printf("\n");
 
   /* Number of iteration */
