@@ -1,6 +1,6 @@
 # studia-c
 
-## Polecenie do kompilacji
+## To compile, I used
 
 gcc -std=c99 -Wall main.c -o main -lm
 
