@@ -1,7 +1,7 @@
 /**
  * @file main.c
  * @author Radoslaw Smoter (radoslaw.smoter@student.pk.edu.pl)
- * @brief Calculate derivatives with Runge-Kutta methods
+ * @brief Calculate system of derivatives with Runge-Kutta methods
  * @version 0.1
  * @date 2021-12-19
  * 
@@ -48,6 +48,9 @@ int main(void)
   /* Step size */
   const double h = 0.001;
 
+  FILE *file = fopen("results.dat", "w");
+  if (file == NULL) return -1;
+
   for (double i = 0; i < 1; i += h) {
     t += h;
 
@@ -66,6 +69,8 @@ int main(void)
     y_d1 += (k1_d1 + 3 * k3_d1) / 4;
     y_d2 += (k1_d2 + 3 * k3_d2) / 4;
     y_d3 += (k1_d3 + 3 * k3_d3) / 4;
+
+    fprintf(file, "%16.8lf%16.8lf%16.8lf\n", y_d1, y_d2, y_d3);
   }
 
   return 0;
