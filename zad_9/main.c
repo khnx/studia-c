@@ -25,7 +25,7 @@
 
 
 /* Number of elements to pull out of the file. */
-#define N 20
+#define N 30
 
 /* loaddata did not return valid data. */
 #define ERR_EMPTY_FILECONTENT -10
@@ -147,10 +147,7 @@ void split_data(double *A, double *X, double *Y) {
 void printV(double v[], unsigned long long iter) {
   /* Coefficents */
   for (int i = 0; i < N/2; i++)
-    printf("%11s%d", "a_", i);
-  printf("\n");
-  for (int i = 0; i < N/2; i++)
-    printf("%s%22.10lf%s", C_BYEL, v[i], C_RESET);
+    printf("a_%d%s%60.50lf%s\n", i, C_BYEL, v[i], C_RESET);
   printf("\n");
 
   /* Number of iteration */
@@ -164,7 +161,7 @@ void printV(double v[], unsigned long long iter) {
 /* Calculate absolute errors between iterations of approximations of the coefficients. Ends approximation, when all of the errors drop below the level of significance. */
 _Bool approx_err(double error[], double v[]) {
   /* Indicates level of significance. */
-  const double MAX_ERROR = 1e-14;
+  const double MAX_ERROR = 1e-5;
 
   for (int i = 0; i < N/2; i++)
     if (fabs(v[i] - error[i]) > MAX_ERROR)
@@ -221,7 +218,10 @@ void approximate(double X[][N/2], double Y[]) {
   FILE *file = fopen("b.txt", "w");
   if (file != NULL) {
     for (int i = 0; i < N/2; i++)
-      fprintf(file, "%.5lf*x^%d\n", coeff[i], i);
+      if (coeff[i] <= 0)
+        fprintf(file, "%.50lf * x.^%i ...\n", coeff[i], i);
+      else
+        fprintf(file, "+%.50lf * x.^%i ...\n", coeff[i], i);
     fclose(file);
   }
   else {
