@@ -20,7 +20,7 @@
 #include <math.h>
 
 
-void importMatrix(double [][10]);
+_Bool importMatrix(double [][10]);
 void sortMatrix(double [][10]);
 void selectF(double [][10], double [][10]);
 void selectLowest(double [][10], double []);
@@ -33,7 +33,9 @@ int main(void)
   /* Space for matrix 10x10 */
   double matrix[10][10];
 
-  importMatrix(matrix);  
+  _Bool isFile = importMatrix(matrix);
+  if (isFile == 1) return -1;
+
   sortMatrix(matrix);
   
   /* Get cols below main diagonal, populate remaining with nan */
@@ -56,10 +58,13 @@ int main(void)
 
 
 /* Import matrix from "matrix.txt" file */
-void importMatrix(double matrix[][10]) {
-  char *filename = "matrix.txt";
-  char *filemode = "r";
-  FILE *file = fopen(filename, filemode);
+_Bool importMatrix(double matrix[][10]) {
+  FILE *file = fopen("matrix.txt", "r");
+
+  if (file == NULL) {
+    fprintf(stderr, "File does not exist.\n");
+    return 1;
+  }
 
   /* Single number from the file */
   double fp;
@@ -88,6 +93,7 @@ void importMatrix(double matrix[][10]) {
   } while (isEOF != EOF && (i*10 + j) < 100);
 
   fclose(file);
+  return 0;
 }
 
 

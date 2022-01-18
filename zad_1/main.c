@@ -59,6 +59,7 @@ double math_function(double x) {
   /* Error: Not a number. */
   if (isnan(log1))
     return NAN;
+  /* Error: Zero division. */
   if (pow(log1, 2) == -3)
     return NAN;
 

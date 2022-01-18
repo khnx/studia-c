@@ -51,11 +51,11 @@ int main(void)
     }
     fclose(file);
   }
-    /* Error: File did not open correctly. */
-    else {
-      fprintf(stderr, "Error: File did not open correctly.\n");
-      return -1;
-    }
+  /* Error: File did not open correctly. */
+  else {
+    fprintf(stderr, "Error: File did not open correctly.\n");
+    return -1;
+  }
 
   return 0;
 }

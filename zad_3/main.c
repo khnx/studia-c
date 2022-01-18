@@ -16,6 +16,10 @@
 #include <stdio.h>
 #include <math.h>
 
+
+double countFunc(double, int);
+
+
 int main(void)
 {
 	/* Function error */
@@ -37,7 +41,6 @@ int main(void)
 		/* Iterate, while element value is significant;
 		When drops below error, stop the loop */
 		do {
-			double countFunc(double, int);
 			elem = countFunc(x, l);
 			sum += elem;
 			l++;

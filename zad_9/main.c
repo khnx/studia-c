@@ -25,7 +25,7 @@
 
 
 /* Number of elements to pull out of the file. */
-#define N 30
+#define N 10
 
 /* loaddata did not return valid data. */
 #define ERR_EMPTY_FILECONTENT -10

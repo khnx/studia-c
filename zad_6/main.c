@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <math.h>
 
-void importMatrix(double [][10]);
+_Bool importMatrix(double [][10]);
 void sortMatrix(double [][10]);
 void selectF(double [][10], double [][10]);
 void sumRows(double [][10], double []);
@@ -32,10 +32,11 @@ int main(void)
   /* Matrix 10x10 */
   double matrix[10][10];
 
-  importMatrix(matrix);
+  _Bool isFile = importMatrix(matrix);
+  if (isFile == 1) return -1;
+  
   sortMatrix(matrix);
 
-  
   double diagonal[10][10];
   selectF(matrix, diagonal);
 
@@ -51,44 +52,43 @@ int main(void)
 
 
 /* Import matrix from "matrix.txt" file */
-void importMatrix(double matrix[][10]) {
-  char *filename = "matrix.txt";
-  char *filemode = "r";
-  FILE *file = fopen(filename, filemode);
+_Bool importMatrix(double matrix[][10]) {
+  FILE *file = fopen("matrix.txt", "r");
 
-  if (file != NULL) {
-    /* Single number from the file */
-    double fp;
-    /* Is EOF encountered */
-    int isEOF;
-    /* Row counter */
-    int i = 0;
-    /* Column counter */
-    int j = 0;
-
-    do {
-      isEOF = fscanf(file, "%lf", &fp);
-      
-      /* Go to a new row */
-      if (j >= 10)
-      {
-        j = 0;
-        i++;
-      }
-      /* Don't assign EOF */
-      if (isEOF != EOF)
-        matrix[i][j] = fp;
-
-      /* Each new entry */
-      j++;
-    } while (isEOF != EOF && (i*10+j) < 100);
-
-    fclose(file);
+  if (file == NULL) {
+    fprintf(stderr, "File does not exist.\n");
+    return 1;
   }
-  else {
-    fprintf(stderr, "Error: File did not open successfully.\n");
-    return;
-  }
+
+  /* Single number from the file */
+  double fp;
+  /* Is EOF encountered */
+  int isEOF;
+  /* Row counter */
+  int i = 0;
+  /* Column counter */
+  int j = 0;
+
+  do {
+    isEOF = fscanf(file, "%lf", &fp);
+    
+    /* Go to a new row */
+    if (j >= 10)
+    {
+      j = 0;
+      i++;
+    }
+    /* Don't assign EOF */
+    if (isEOF != EOF)
+      matrix[i][j] = fp;
+
+    /* Each new entry */
+    j++;
+  } while (isEOF != EOF && (i*10+j) < 100);
+
+  fclose(file);
+
+  return 0;
 }
 
 
