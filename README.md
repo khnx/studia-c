@@ -1,6 +1,6 @@
 # studia-c
 
-## To compile I used
+## To compile, I used
 
 gcc -std=c99 -Wall main.c -o main -lm
 
