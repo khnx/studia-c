@@ -1,9 +1,13 @@
 # studia-c
 
-## To compile, I used
+## Compilation
 
+Compiler:
+GCC
+
+Compilation command:
 gcc -std=c99 -Wall main.c -o main -lm
 
 ## System
 
-Ubuntu 21.10
+Ubuntu 21.10 (Linux)
