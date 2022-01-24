@@ -73,8 +73,7 @@ _Bool importMatrix(double matrix[][10]) {
     isEOF = fscanf(file, "%lf", &fp);
     
     /* Go to a new row */
-    if (j >= 10)
-    {
+    if (j >= 10) {
       j = 0;
       i++;
     }
@@ -99,13 +98,12 @@ void exch(double *a, double *b) {
   *b = temp;
 }
 
-/* Sort an array according to mode, ascending order  - 1, descending - 0 */
+/* Sort an array according to mode, ascending order - 1, descending - 0 */
 void shellSort(double v[], int n, int mode) {
   int gap, i, j;
 
   for (gap = n/2; gap > 0; gap /= 2)
-    for (i = gap; i < n; i++)
-    {
+    for (i = gap; i < n; i++) {
       if(mode)
         /* Compare elements that are gap apart from each other */
         for (j = i-gap; j >= 0 && v[j] > v[j+gap]; j -= gap)
