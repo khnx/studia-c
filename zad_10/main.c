@@ -10,7 +10,8 @@
 
 
 #include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
+#include <tgmath.h>
 
 /* Constants */
 const double C1 = 0.0048;
@@ -36,8 +37,8 @@ double d3(double t, double U_c1, double U_c2, double U_c3) {
   return (U1(t) - U_c1 - U_c3) / (R1 * C3) - (U_c3 - U_c2) / (R2 * C2);
 }
 
-int main(void)
-{
+int main(void) {
+  
   double k1_d1, k1_d2, k1_d3;
   double k2_d1, k2_d2, k2_d3;
   double k3_d1, k3_d2, k3_d3;
@@ -46,12 +47,16 @@ int main(void)
   double t = 0;
 
   /* Step size */
-  const double h = 10e-5;
+  const double h = 1e-4;
 
   FILE *f_d1 = fopen("d1.dat", "w");
   FILE *f_d2 = fopen("d2.dat", "w");
   FILE *f_d3 = fopen("d3.dat", "w");
-  if (f_d1 == NULL || f_d2 == NULL || f_d3 == NULL) return -1;
+
+  if (f_d1 == NULL || f_d2 == NULL || f_d3 == NULL) {
+    perror( "main" );
+    exit( EXIT_FAILURE );
+  }
 
   for (double i = 0; i < 1; i += h) {
     t += h;
@@ -77,9 +82,5 @@ int main(void)
     fprintf(f_d3, "%16.8lf\n", y_d3);
   }
 
-  fclose(f_d1);
-  fclose(f_d2);
-  fclose(f_d3);
-
-  return 0;
+  exit( EXIT_SUCCESS );   // Implicit fclose().
 }

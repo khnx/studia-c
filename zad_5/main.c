@@ -17,10 +17,12 @@
 */
 
 #include <stdio.h>
-#include <math.h>
+#include <tgmath.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 
-_Bool importMatrix(double [][10]);
+void importMatrix(double [][10]);
 void sortMatrix(double [][10]);
 void selectF(double [][10], double [][10]);
 void selectLowest(double [][10], double []);
@@ -28,14 +30,11 @@ double product(double []);
 void saveResults(double [][10], double [], double);
 
 
-int main(void)
-{
+int main( void ) {
   /* Space for matrix 10x10 */
   double matrix[10][10];
 
-  _Bool isFile = importMatrix(matrix);
-  if (isFile == 1) return -1;
-
+  importMatrix(matrix);
   sortMatrix(matrix);
   
   /* Get cols below main diagonal, populate remaining with nan */
@@ -58,12 +57,12 @@ int main(void)
 
 
 /* Import matrix from "matrix.txt" file */
-_Bool importMatrix(double matrix[][10]) {
+void importMatrix(double matrix[][10]) {
   FILE *file = fopen("matrix.txt", "r");
 
-  if (file == NULL) {
-    fprintf(stderr, "File does not exist.\n");
-    return 1;
+  if ( file == NULL ) {
+    perror( "File does not exist. ");
+    exit( EXIT_FAILURE );
   }
 
   /* Single number from the file */
@@ -93,7 +92,6 @@ _Bool importMatrix(double matrix[][10]) {
   } while (isEOF != EOF && (i*10 + j) < 100);
 
   fclose(file);
-  return 0;
 }
 
 
@@ -105,39 +103,33 @@ void exch(double *a, double *b) {
 }
 
 
-/* Sort an array according to monotonicity, ascending order  - 1, descending - 0 */
-void bubbleSort(double arr[], int n, int monotonicity) {
-  int swapCounter = 1;
+/* Sort an array. */
+void bubbleSort( double arr[], int n, bool (*mode)( double a, double b ) ) {
 
-  /* Do until no more swaps have been encountered */
-  while(swapCounter) {
+  size_t swapCounter = 1;
+  while ( swapCounter ) {
     swapCounter = 0;
 
-    for (int i = 0; i < n-1; i++)
-    {
-      /* Ascending order */
-      if (monotonicity) {
-        if (arr[i] < arr[i + 1]) {
-          exch(&arr[i], &arr[i + 1]);
-          swapCounter++;
-        }
-        /* Descending order */
-      } else {
-        if (arr[i] > arr[i + 1]) {
-          exch(&arr[i], &arr[i + 1]);
-          swapCounter++;
-        }
+    for (size_t i = 0; i < n-1; i++)
+      if ( (*mode)( arr[ i ], arr[ i+1 ] ) ) {
+        exch( &arr[ i ], &arr[ i+1 ] );
+        swapCounter++;
       }
-    }
   }
+}
+
+
+bool desc( double a, double b ) {
+  return ( a < b ) ? true : false;
 }
 
 
 /* Sort all rows of a  matrix */
 void sortMatrix(double arr[][10]) {
   for (int i = 0; i < 10; i++)
-    bubbleSort(arr[i], 10, 1);
+    bubbleSort( arr[i], 10, desc );
 }
+
 
 
 /* Select entries from under the main diagonal of the matrix */
@@ -167,6 +159,11 @@ void selectCol(double arr[][10], double col[], int n) {
 }
 
 
+bool asc( double a, double b ) {
+  return ( a > b ) ? true : false;
+}
+
+
 /* Select the lowest values in the array arr, return them in the array max */
 void selectLowest(double arr[][10], double min[]) {
   /* Placeholder for each column */
@@ -174,7 +171,7 @@ void selectLowest(double arr[][10], double min[]) {
 
   for (int i = 0; i < 10; i++) {
     selectCol(arr, col, i);
-    bubbleSort(col, 10, 0);
+    bubbleSort(col, 10, asc);
 
     int j = 0;
     while (isnan(col[j])) j++;
@@ -204,29 +201,27 @@ void saveResults(double matrix[][10], double max[], double productVal) {
   char *filename = "results.txt";
   FILE *file = fopen(filename, "w");
 
-  if (file != NULL) {
-    /* Sorted matrix entires */
-    fprintf(file, "%s", "Sorted matrix:\n");
-    for (int i = 0; i < 10; i++) {
-      for(int j = 0; j < 10; j++)
-        fprintf(file, "%8.1f", matrix[i][j]);
-      fprintf(file, "%c", '\n');
-    }
-
-    /* Entries from under main diagonal, highest values */
-    fprintf(file, "%s", "Under main diagonal, col min:\n");
-    for (int i = 0; i < 10; i++)
-      fprintf(file, "%8.1f", max[i]);
-
-    /* Product value */
-    fprintf(file, "%s", "\nProduct value:\n");
-    fprintf(file, "%16.6e", productVal);
-
-    fclose(file);
+  if (file == NULL) {
+    perror( "saveResults" );
+    exit( EXIT_FAILURE );
   }
-  /* Error */
-  else {
-    fprintf(stderr, "Error: File did not open correctly.\n");
-    return;
+
+  /* Sorted matrix entires */
+  fprintf(file, "%s", "Sorted matrix:\n");
+  for (int i = 0; i < 10; i++) {
+    for(int j = 0; j < 10; j++)
+      fprintf(file, "%8.1f", matrix[i][j]);
+    fprintf(file, "%c", '\n');
   }
+
+  /* Entries from under main diagonal, highest values */
+  fprintf(file, "%s", "Under main diagonal, col min:\n");
+  for (int i = 0; i < 10; i++)
+    fprintf(file, "%8.1f", max[i]);
+
+  /* Product value */
+  fprintf(file, "%s", "\nProduct value:\n");
+  fprintf(file, "%16.6e", productVal);
+
+  fclose(file);
 }

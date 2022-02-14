@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 
 /* Number of elements of the permutation */
@@ -37,8 +38,8 @@ void exch(char v[], int i, int j) {
 }
 
 
-/* Return true if number if even, false otherwise */
-_Bool isEven(int n) { return !(n % 2); }
+/* Return true if number if even. */
+bool isEven(int n) { return !(n % 2); }
 
 
 /* Generate permutations. m is the number of initial elements of the permutation set. m = NUMBER_OF_LETTERS initially. Later, m < NUMBER_OF_LETTERS. Performs permutations by calling itself with m-th element unaltered and then m-1 times with m-th element exchanged for one of initial m-1 elements. */
@@ -82,19 +83,18 @@ void PERM(int m) {
 
 
 /* Calculate factorial of given number */
-long long factorial(int n) {
+size_t factorial(size_t n) {
   if (n < 0) return 0;
   else if (n == 0 || n == 1) return 1;
   return n * factorial(n - 1);
 }
 
 
-int main(void)
-{
+int main( void ) {
   for (int i = 0; i < NUMBER_OF_LETTERS; i++) P[i] = i + 'a';
   
   PERM(NUMBER_OF_LETTERS);
-  printf("Predicted number of permutations: %lli\n", factorial(NUMBER_OF_LETTERS));
+  printf("Predicted number of permutations: %zu\n", factorial(NUMBER_OF_LETTERS));
 
-  return 0;
+  exit( EXIT_SUCCESS );
 }

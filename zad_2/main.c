@@ -14,7 +14,8 @@
 */
 
 #include <stdio.h>
-#include <math.h>
+#include <tgmath.h>
+#include <stdlib.h>
 
 /* Calculate mathematical functions */
 double countFirst(double x);
@@ -22,42 +23,36 @@ double countSecond(double x);
 double countThird(double x);
 
 
-int main(void)
-{
+int main( void ) {
   /* Domain min/max*/
-  double domain[] = { 0.5, 0.9 };
+  const double domain[] = { 0.5, 0.9 };
   /* Domain step */
-  double step = 0.002;
+  const double step = 0.002;
 
   FILE *file = fopen("results.dat", "w");
+  if ( file == NULL ) {
+    perror( "main" );
+    exit( EXIT_FAILURE );
+  }
   
-  /* Ensure file exists */
-  if (file != NULL) {
-    for (double x = domain[0]; x < domain[1]; x += step) {
-      /* Step result */
-      double y;
+  for (double x = domain[0]; x < domain[1]; x += step) {
+    /* Step result */
+    double y;
 
-      /* If in domain, do respectable function */
-      if (x < .6)
-        y = countFirst(x);
-      else if (x >= .6 && x < .7)
-        y = countSecond(x);
-      else
-        y = countThird(x);
-      
-      if ( ! isnan(y))
-        fprintf(file, "%10.5f%10.5f\n", x, y);
-      
-    }
-    fclose(file);
-  }
-  /* Error: File did not open correctly. */
-  else {
-    fprintf(stderr, "Error: File did not open correctly.\n");
-    return -1;
+    /* If in domain, do respectable function */
+    if (x < .6)
+      y = countFirst(x);
+    else if (x >= .6 && x < .7)
+      y = countSecond(x);
+    else
+      y = countThird(x);
+    
+    if ( ! isnan(y))
+      fprintf(file, "%10.5f%10.5f\n", x, y);
+    
   }
 
-  return 0;
+  exit( EXIT_SUCCESS );   // Implicit fclose().
 }
 
 

@@ -55,31 +55,23 @@ void randomNumbersMatrix(int matrix[][10]) {
 
 
 /* Saves specified array to a file. Takes the matrix, file name, mode in which file should be saved (e.g. "r"), message to label the data in the file. */
-void saveMatrixToFile(
-  int matrix[][10],
-  char *filename,
-  char *mode,
-  char *msg) {
+void saveMatrixToFile(int matrix[][10], char *filename, char *mode, char *msg) {
 
   FILE *file = fopen(filename, mode);
+  if ( file == NULL) {
+    perror( "saveMatrixToFile" );
+    exit( EXIT_FAILURE );
+  }
 
-  if (file != NULL) {
-    /* Matrix entires */
-    fprintf(file, "%s", msg);
-    for (int i = 0; i < 10; i++) {
-      for (int j = 0; j < 10; j++)
-        fprintf(file, "%6i", matrix[i][j]);
-      fprintf(file, "\n");
-    }
+  /* Matrix entires */
+  fprintf(file, "%s", msg);
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++)
+      fprintf(file, "%6i", matrix[i][j]);
     fprintf(file, "\n");
-    
-    fclose(file);
   }
-  else {
-    fprintf(stderr, "Error: Can not open the file.");
-    return;
-  }
-
+  fprintf(file, "\n");
+  fclose(file);
 }
 
 

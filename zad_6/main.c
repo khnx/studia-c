@@ -17,9 +17,11 @@
 */
 
 #include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
+#include <tgmath.h>
+#include <stdbool.h>
 
-_Bool importMatrix(double [][10]);
+void importMatrix(double [][10]);
 void sortMatrix(double [][10]);
 void selectF(double [][10], double [][10]);
 void sumRows(double [][10], double []);
@@ -27,13 +29,12 @@ double product(double []);
 void saveResults(double [][10], double [], double);
 
 
-int main(void)
-{
+int main( void ) {
+
   /* Matrix 10x10 */
   double matrix[10][10];
 
-  _Bool isFile = importMatrix(matrix);
-  if (isFile == 1) return -1;
+  importMatrix(matrix);
   
   sortMatrix(matrix);
 
@@ -52,12 +53,12 @@ int main(void)
 
 
 /* Import matrix from "matrix.txt" file */
-_Bool importMatrix(double matrix[][10]) {
+void importMatrix(double matrix[][10]) {
   FILE *file = fopen("matrix.txt", "r");
 
   if (file == NULL) {
-    fprintf(stderr, "File does not exist.\n");
-    return 1;
+    perror( "File does not exist.");
+    exit( EXIT_FAILURE );
   }
 
   /* Single number from the file */
@@ -86,8 +87,6 @@ _Bool importMatrix(double matrix[][10]) {
   } while (isEOF != EOF && (i*10+j) < 100);
 
   fclose(file);
-
-  return 0;
 }
 
 
@@ -98,19 +97,15 @@ void exch(double *a, double *b) {
   *b = temp;
 }
 
-/* Sort an array according to mode, ascending order - 1, descending - 0 */
-void shellSort(double v[], int n, int mode) {
+/* Sort an array. */
+void shellSort(double v[], int n, bool mode(double a, double b)) {
   int gap, i, j;
 
   for (gap = n/2; gap > 0; gap /= 2)
     for (i = gap; i < n; i++) {
-      if(mode)
-        /* Compare elements that are gap apart from each other */
-        for (j = i-gap; j >= 0 && v[j] > v[j+gap]; j -= gap)
-          exch(&v[j], &v[j+gap]);
-      else
-        for (j = i-gap; j >= 0 && v[j] < v[j+gap]; j -= gap)
-          exch(&v[j], &v[j+gap]);
+      /* Compare elements that are gap apart from each other */
+      for (j = i-gap; j >= 0 && mode( v[j], v[j+gap] ); j -= gap)
+        exch(&v[j], &v[j+gap]);
     }
 }
 
@@ -134,11 +129,16 @@ void makeMatrix(double matrix[][10], double array[]) {
 }
 
 
+bool descend(double a, double b) {
+  return (a < b) ? true : false;
+}
+
+
 /* Sort elements of the matrix in descending order */
 void sortMatrix(double matrix[][10]) {
   double array[100];
   straightenMatrix(array, matrix);
-  shellSort(array, 100, 0);
+  shellSort(array, 100, descend);
   makeMatrix(matrix, array);
 }
 
@@ -182,7 +182,7 @@ double product(double arr[]) {
   double p = 1;
   for (int i = 0; i < 10; i++)
     /* Ensure none of the entries are NAN */
-    if(!isnan(arr[i]))
+    if( ! isnan(arr[i]))
       p *= arr[i];
   return p;
 }
@@ -190,33 +190,28 @@ double product(double arr[]) {
 
 /* Save results of the task to a txt file */
 void saveResults(double matrix[][10], double array[], double product) {
-  char *filename = "results.txt";
-  char *filemode = "w";
-  FILE *file = fopen(filename, filemode);
-
-  if (file != NULL) {
-    /* Sorted matrix entires */
-    fprintf(file, "%s", "Sorted matrix:\n");
-    for (int i = 0; i < 10; i++) {
-      for(int j = 0; j < 10; j++)
-        fprintf(file, "%8.1f", matrix[i][j]);
-      fprintf(file, "%c", '\n');
-    }
-
-    /* Entries from under main diagonal, highest values */
-    fprintf(file, "%s", "Under main diagonal, rows sums:\n");
-    for (int i = 0; i < 10; i++)
-      fprintf(file, "%8.1f", array[i]);
-
-    /* Product value */
-    fprintf(file, "%s", "\nProduct value:\n");
-    fprintf(file, "%16.6e", product);
-  
-    fclose(file);
-  } 
-  else {
-    fprintf(stderr, "Error: File did not open correctly.\n");
-    return;
+  FILE *file = fopen("results.txt", "w");
+  if ( file == NULL ) {
+    perror( "saveResults" );
+    exit( EXIT_FAILURE );
   }
 
+  /* Sorted matrix entires */
+  fprintf(file, "%s", "Sorted matrix:\n");
+  for (int i = 0; i < 10; i++) {
+    for(int j = 0; j < 10; j++)
+      fprintf(file, "%8.1f", matrix[i][j]);
+    fprintf(file, "%c", '\n');
+  }
+
+  /* Entries from under main diagonal, highest values */
+  fprintf(file, "%s", "Under main diagonal, rows sums:\n");
+  for (int i = 0; i < 10; i++)
+    fprintf(file, "%8.1f", array[i]);
+
+  /* Product value */
+  fprintf(file, "%s", "\nProduct value:\n");
+  fprintf(file, "%16.6e", product);
+
+  fclose(file);
 }

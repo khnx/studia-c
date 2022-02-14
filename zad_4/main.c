@@ -13,27 +13,21 @@
 */
 
 #include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
+#include <tgmath.h>
+#include <stdbool.h>
 
 
 double doMath(double);
 void showValues(double);
 
 
-int main(void)
-{
+int main(void) {
   /* Domain */
-  double x = 1.2;
-
-  /* Result of the mathematical function */
-  double value = doMath(x);
-
-  /* If the mathematical function resulted in non-number value, it can't be proceeded, because it doesn't have any digits to show. */
-  if (value == NAN) return -1;
-
-  showValues(value);
+  const double x = 1.2;
+  showValues( doMath( x ) );
   
-  return 0;
+  exit( EXIT_SUCCESS );
 }
 
 
@@ -42,9 +36,11 @@ double doMath(double x) {
   double log1 = log(x);
 
   /* NAN exception */
-  if (isnan(log1)) return NAN;
+   if ( isnan( log1 ) ) {
+    perror( "doMath" );
+    exit( EXIT_FAILURE );
+  }
 
-  /* Real value */
   return 5 / (3 + pow(log1 / log(10), 2));
 }
 
@@ -67,7 +63,7 @@ unsigned short int selectDigit(double n, int k) {
 
 
 /* If n is even - return 0; otherwise - return 1 */
-_Bool isEven(int n) {
+bool isEven(int n) {
   return n % 2;
 }
 

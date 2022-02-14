@@ -14,54 +14,48 @@
 */
 
 #include <stdio.h>
-#include <math.h>
+#include <tgmath.h>
+#include <stdlib.h>
 
 
 double countFunc(double, int);
 
 
-int main(void)
-{
+int main( void ) {
 	/* Function error */
-  double error = .000016;
+  const double error = .000016;
 	/* Domain step */
-  double step = .01;
+  const double step = .01;
 	/* Domain */
-  double domain[] = { 3., 4. };
-	/* Sum iterator */
-	int k = 1;
+  const double domain[] = { 3., 4. };
 	/* Total sum */
 	double sum = .0;
 
 	for (double x = domain[0]; x < domain[1]; x += step) {
 		/* Partial sum; for each domain step */
 		double elem;
-		/* Local copy of sum iterator */
-		int l = k;
+		/* Sum iterator */
+		size_t k = 1;
 		/* Iterate, while element value is significant;
 		When drops below error, stop the loop */
 		do {
-			elem = countFunc(x, l);
+			elem = countFunc(x, k);
 			sum += elem;
-			l++;
-		} while (elem > error);
+			k++;
+		} while ( fabs( elem ) > error );
 	}
 
 	printf("THE_SUM = %.6f\n", sum);
 
 	/* Save to a file */
 	FILE *file = fopen("results.txt", "w");
-	if (file != NULL) {
-		fprintf(file, "THE_SUM = %.6f\n", sum);
-		fclose(file);
+	if (file == NULL) {
+		perror( "main" );
+		exit( EXIT_FAILURE );
 	}
-	/* File did not open correctly. */
-	else {
-		fprintf(stderr, "Error: File did not open correctly.\n");
-		return -1;
-	}
+	fprintf(file, "THE_SUM = %.6f\n", sum);
 
-  return 0;
+  exit( EXIT_SUCCESS ); 		// Implicit fclose().
 }
 
 /* Calculate a mathematical function */

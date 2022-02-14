@@ -21,48 +21,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+#include <tgmath.h>
+#include <stdbool.h>
 
 
 /* Number of elements to pull out of the file. */
-#define N 30
-
-/* loaddata did not return valid data. */
-#define ERR_EMPTY_FILECONTENT -10
-/* File did not open correctly. */
-#define ERR_INVALID_FILE NULL
-/* File name is an empty string. */
-#define ERR_EMPTY_FILENAME NULL
-
+#define N 10
 
 double *load_data(char *);
 void split_data(double *, double *, double *);
-void approximate(double A[][N/2], double B[]);
+void approximate(double [][N/2], double []);
 
 
-#include <time.h>
-
-int main(int argc, char const *argv[])
-{
-  double time_spent = 0.0;
-  clock_t begin_clock = clock();
+int main( void ) {
 
   /* filecontent is an array with format XYXY... */
   double *filecontent = load_data("a.txt");
-
-  /* End the program, because it failed: loaddata did not return valid data. */
-  if (filecontent == NULL) {
-    fprintf(stderr, "Error: Data Did not Load Correctly.\n");
-    return ERR_EMPTY_FILECONTENT;
-  }
 
   double X[N/2];
   double Y[N/2];
 
   split_data(filecontent, X, Y);
-
-  /* Free filecontent, because it's no longer used. */
-  if (filecontent != NULL) free(filecontent);
+  free(filecontent);
 
   double approx[N/2][N/2];
   for (int i = 0; i < N/2; i++)
@@ -71,47 +51,44 @@ int main(int argc, char const *argv[])
 
   approximate(approx, Y);
 
-  clock_t end_clock = clock();
-  time_spent += (double)(end_clock - begin_clock) / CLOCKS_PER_SEC;
-  printf("\nThe elapsed time is %lf seconds.\n", time_spent);
-
-  return 0;
+  exit( EXIT_SUCCESS );
 }
 
 
 /* Loads exactly n floating point numbers and returns them as an array. */
 double *load_data(char *filename) {
   /* Filename is an empty string. */
-  if (strcmp(filename, "") == 0) {
-    fprintf(stderr, "Error: File Name is an Empty String.\n");
-    return ERR_EMPTY_FILENAME;
+  if (strncmp(filename, "", 64) == 0) {
+    perror( "load_data" );
+    exit( EXIT_FAILURE );
   }
-
-  /* Memory for n elements. */
-  double *filecontent = malloc(sizeof(double) * N);
 
   FILE *file = fopen(filename, "r");
 
-  if (file != NULL) {
-    /* End of the file indicator. */
-    _Bool isEOF = 1;
-    /* Buffer for the file output */
-    double *fp = malloc(sizeof(double));
-
-    long long i;
-    for (i = 0; isEOF == 1 && i < N; i++) {
-      isEOF = fscanf(file, "%lf", fp);
-      filecontent[i] = *fp;
-    }
-
-    free(fp);
-    fclose(file);
+  if (file == NULL) {
+    perror( "load_data" );
+    exit( EXIT_FAILURE );
   }
-  /* The File did not open correctly */
-  else {
-    fprintf(stderr, "Error: The File %s Did Not Open Correctly.\n", filename);
-    return ERR_INVALID_FILE;
+
+  /* End of the file indicator. */
+  bool isEOF = 1;
+  /* Buffer for the file output */
+  double *fp = malloc(sizeof(double));
+  /* Memory for n elements. */
+  double *filecontent = malloc(sizeof(double) * N);
+
+  if ( filecontent == NULL ) {
+    perror( "load_data" );
+    exit( EXIT_FAILURE );
   }
+
+  for (long long i = 0; isEOF == 1 && i < N; i++) {
+    isEOF = fscanf(file, "%lf", fp);
+    filecontent[i] = *fp;
+  }
+
+  free(fp);
+  fclose(file);
 
   /* Everything went correctly */
   return filecontent;
@@ -147,7 +124,7 @@ void split_data(double *A, double *X, double *Y) {
 void printV(double v[], unsigned long long iter) {
   /* Coefficents */
   for (int i = 0; i < N/2; i++)
-    printf("a_%d%s%60.50lf%s\n", i, C_BYEL, v[i], C_RESET);
+    printf("%3d%s%60.50lf%s\n", i, C_BYEL, v[i], C_RESET);
   printf("\n");
 
   /* Number of iteration */
@@ -159,14 +136,14 @@ void printV(double v[], unsigned long long iter) {
 
 
 /* Calculate absolute errors between iterations of approximations of the coefficients. Ends approximation, when all of the errors drop below the level of significance. */
-_Bool approx_err(double error[], double v[]) {
+bool approx_err(double error[], double v[]) {
   /* Indicates level of significance. */
   const double MAX_ERROR = 1e-5;
 
   for (int i = 0; i < N/2; i++)
     if (fabs(v[i] - error[i]) > MAX_ERROR)
-      return 1;
-  return 0;
+      return true;
+  return false;
 }
 
 
@@ -216,16 +193,14 @@ void approximate(double X[][N/2], double Y[]) {
   printV(coeff, iter);
 
   FILE *file = fopen("b.txt", "w");
-  if (file != NULL) {
-    for (int i = 0; i < N/2; i++)
-      if (coeff[i] <= 0)
-        fprintf(file, "%.50lf * x.^%i ...\n", coeff[i], i);
-      else
-        fprintf(file, "+%.50lf * x.^%i ...\n", coeff[i], i);
-    fclose(file);
+  if (file == NULL) {
+    perror( "approximate" );
+    exit( EXIT_FAILURE );
   }
-  else {
-    fprintf(stderr, "Error: File did not open successfully.\n");
-    return;
-  }
+  for (int i = 0; i < N/2; i++)
+    if (coeff[i] <= 0)
+      fprintf(file, "%.50lf * x.^%i ...\n", coeff[i], i);
+    else
+      fprintf(file, "+%.50lf * x.^%i ...\n", coeff[i], i);
+  fclose(file);
 }
